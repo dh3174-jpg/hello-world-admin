@@ -976,3 +976,70 @@ body {
     animation: none;
   }
 }
+
+/* =====================================
+   ADMIN SIDEBAR NAVIGATION
+===================================== */
+
+.admin-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: #b8b8b8;
+  background: transparent;
+  border: 1px solid transparent;
+  transition:
+          background 0.18s ease,
+          color 0.18s ease,
+          border-color 0.18s ease;
+}
+
+/* White + bounce when hovering */
+.admin-sidebar-link:hover {
+  background: #ffffff;
+  color: #111111;
+  animation: sidebarNavBounce 0.35s ease;
+}
+
+/* Make the icon dark too when the background turns white */
+.admin-sidebar-link:hover span {
+  color: #111111 !important;
+}
+
+/* Current page */
+.admin-sidebar-link[data-active="true"] {
+  background: rgba(167, 139, 250, 0.12);
+  border-color: rgba(167, 139, 250, 0.22);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Current page can still turn white when hovered */
+.admin-sidebar-link[data-active="true"]:hover {
+  background: #ffffff;
+  color: #111111;
+  border-color: #ffffff;
+}
+
+@keyframes sidebarNavBounce {
+  0% {
+    transform: translateX(0);
+  }
+
+  40% {
+    transform: translateX(5px);
+  }
+
+  70% {
+    transform: translateX(-1px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}

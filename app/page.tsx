@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -7,7 +6,6 @@ import AdminNav from "@/app/components/admin-nav";
 export default async function HomePage() {
     const supabase = await createClient();
 
-    // Check Google authentication.
     const {
         data: { user },
     } = await supabase.auth.getUser();
@@ -16,7 +14,6 @@ export default async function HomePage() {
         redirect("/login");
     }
 
-    // Only approved superadmins can access the dashboard.
     const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("first_name, last_name, is_superadmin")
@@ -81,7 +78,6 @@ export default async function HomePage() {
         );
     }
 
-    // Load dashboard statistics and newest captions.
     const [
         usersResult,
         captionsResult,
@@ -178,35 +174,41 @@ export default async function HomePage() {
                 minHeight: "100vh",
                 background: "#050505",
                 color: "#f5f5f5",
-                padding: "32px",
+                display: "flex",
+                alignItems: "flex-start",
             }}
         >
+            <AdminNav />
+
             <div
                 style={{
-                    maxWidth: "1180px",
-                    margin: "0 auto",
+                    flex: 1,
+                    minWidth: 0,
+                    padding: "42px 48px 70px",
                 }}
             >
-                {/* Navigation */}
-                <header
+                <div
                     style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        gap: "24px",
-                        flexWrap: "wrap",
-                        marginBottom: "54px",
+                        width: "100%",
+                        maxWidth: "1180px",
+                        margin: "0 auto",
                     }}
                 >
-                    <div>
+                    <header
+                        style={{
+                            marginBottom: "48px",
+                        }}
+                    >
                         <p
                             style={{
                                 color: "#a78bfa",
                                 fontWeight: 600,
-                                marginBottom: "8px",
+                                margin: "0 0 8px",
+                                fontSize: "13px",
+                                letterSpacing: "0.05em",
                             }}
                         >
-                            HELLO WORLD ADMIN
+                            OVERVIEW
                         </p>
 
                         <h1
@@ -217,158 +219,155 @@ export default async function HomePage() {
                         >
                             Dashboard
                         </h1>
-                    </div>
+                    </header>
 
-                    <AdminNav />
-                </header>
-
-                {/* Welcome message */}
-                <section style={{ marginBottom: "36px" }}>
-                    <h2
+                    <section
                         style={{
-                            fontSize: "28px",
-                            marginBottom: "8px",
+                            marginBottom: "36px",
                         }}
                     >
-                        Welcome, {fullName}
-                    </h2>
-
-                    <p
-                        style={{
-                            margin: 0,
-                            color: "#e5e5e5",
-                            fontSize: "17px",
-                        }}
-                    >
-                        Your community at a glance.
-                    </p>
-                </section>
-
-                {/* Statistics cards */}
-                <section className="admin-stats-grid">
-                    {statCards.map((card) => (
-                        <StatCard
-                            key={card.label}
-                            label={card.label}
-                            value={card.value}
-                            icon={card.icon}
-                        />
-                    ))}
-                </section>
-
-                {/* Community voting donut charts */}
-                <section className="admin-dashboard-panel">
-                    <div className="admin-section-heading">
-                        <div>
-                            <h2>Community Voting</h2>
-
-                            <p>
-                                See how your community responds
-                                to AI-generated captions.
-                            </p>
-                        </div>
-
-                        <span className="admin-section-tag">
-                            {ratedVotes} ratings
-                        </span>
-                    </div>
-
-                    <div
-                        style={{
-                            display: "grid",
-                            gridTemplateColumns:
-                                "repeat(auto-fit, minmax(220px, 1fr))",
-                            gap: "20px",
-                        }}
-                    >
-                        <VotingCircle
-                            label="Upvote Rate"
-                            rate={upvoteRate}
-                            count={upvotes}
-                            total={ratedVotes}
-                            color="#a78bfa"
-                        />
-
-                        <VotingCircle
-                            label="Downvote Rate"
-                            rate={downvoteRate}
-                            count={downvotes}
-                            total={ratedVotes}
-                            color="#60a5fa"
-                        />
-                    </div>
-                </section>
-
-                {/* Recent AI captions */}
-                <section className="admin-dashboard-panel">
-                    <div className="admin-section-heading">
-                        <div>
-                            <h2>Recent AI Captions</h2>
-
-                            <p>
-                                The three newest captions
-                                in your community.
-                            </p>
-                        </div>
-
-                        <Link
-                            href="/captions"
-                            className="admin-view-all"
+                        <h2
+                            style={{
+                                fontSize: "28px",
+                                marginBottom: "8px",
+                            }}
                         >
-                            View all captions →
-                        </Link>
-                    </div>
+                            Welcome, {fullName}
+                        </h2>
 
-                    {recentCaptionsResult.error ? (
-                        <p style={{ color: "#fca5a5" }}>
-                            Could not load recent captions:{" "}
-                            {recentCaptionsResult.error.message}
+                        <p
+                            style={{
+                                margin: 0,
+                                color: "#e5e5e5",
+                                fontSize: "17px",
+                            }}
+                        >
+                            Your community at a glance.
                         </p>
-                    ) : recentCaptions.length === 0 ? (
-                        <p style={{ color: "#e5e5e5" }}>
-                            No captions have been generated yet.
-                        </p>
-                    ) : (
-                        <div className="admin-recent-list">
-                            {recentCaptions.map((caption) => (
-                                <div
-                                    key={caption.id}
-                                    className="admin-recent-item"
-                                >
-                                    <p className="admin-recent-caption">
-                                        {caption.generated_text}
-                                    </p>
+                    </section>
 
-                                    <div className="admin-recent-meta">
-                                        <span className="admin-vibe-tag">
-                                            {caption.vibe || "No vibe"}
-                                        </span>
+                    <section className="admin-stats-grid">
+                        {statCards.map((card) => (
+                            <StatCard
+                                key={card.label}
+                                label={card.label}
+                                value={card.value}
+                                icon={card.icon}
+                            />
+                        ))}
+                    </section>
 
-                                        <span>
-                                            {new Date(
-                                                caption.created_at
-                                            ).toLocaleDateString(
-                                                "en-US",
-                                                {
-                                                    month: "short",
-                                                    day: "numeric",
-                                                    year: "numeric",
-                                                    timeZone: "UTC",
-                                                }
-                                            )}
-                                        </span>
-                                    </div>
-                                </div>
-                            ))}
+                    <section className="admin-dashboard-panel">
+                        <div className="admin-section-heading">
+                            <div>
+                                <h2>Community Voting</h2>
+
+                                <p>
+                                    See how your community responds to
+                                    AI-generated captions.
+                                </p>
+                            </div>
+
+                            <span className="admin-section-tag">
+                                {ratedVotes} ratings
+                            </span>
                         </div>
-                    )}
-                </section>
+
+                        <div
+                            style={{
+                                display: "grid",
+                                gridTemplateColumns:
+                                    "repeat(auto-fit, minmax(220px, 1fr))",
+                                gap: "20px",
+                            }}
+                        >
+                            <VotingCircle
+                                label="Upvote Rate"
+                                rate={upvoteRate}
+                                count={upvotes}
+                                total={ratedVotes}
+                                color="#a78bfa"
+                            />
+
+                            <VotingCircle
+                                label="Downvote Rate"
+                                rate={downvoteRate}
+                                count={downvotes}
+                                total={ratedVotes}
+                                color="#60a5fa"
+                            />
+                        </div>
+                    </section>
+
+                    <section className="admin-dashboard-panel">
+                        <div className="admin-section-heading">
+                            <div>
+                                <h2>Recent AI Captions</h2>
+
+                                <p>
+                                    The three newest captions in your
+                                    community.
+                                </p>
+                            </div>
+
+                            <Link
+                                href="/captions"
+                                className="admin-view-all"
+                            >
+                                View all captions →
+                            </Link>
+                        </div>
+
+                        {recentCaptionsResult.error ? (
+                            <p style={{ color: "#fca5a5" }}>
+                                Could not load recent captions:{" "}
+                                {recentCaptionsResult.error.message}
+                            </p>
+                        ) : recentCaptions.length === 0 ? (
+                            <p style={{ color: "#e5e5e5" }}>
+                                No captions have been generated yet.
+                            </p>
+                        ) : (
+                            <div className="admin-recent-list">
+                                {recentCaptions.map((caption) => (
+                                    <div
+                                        key={caption.id}
+                                        className="admin-recent-item"
+                                    >
+                                        <p className="admin-recent-caption">
+                                            {caption.generated_text}
+                                        </p>
+
+                                        <div className="admin-recent-meta">
+                                            <span className="admin-vibe-tag">
+                                                {caption.vibe || "No vibe"}
+                                            </span>
+
+                                            <span>
+                                                {new Date(
+                                                    caption.created_at
+                                                ).toLocaleDateString(
+                                                    "en-US",
+                                                    {
+                                                        month: "short",
+                                                        day: "numeric",
+                                                        year: "numeric",
+                                                        timeZone: "UTC",
+                                                    }
+                                                )}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </section>
+                </div>
             </div>
         </main>
     );
 }
 
-// Statistics card
 function StatCard({
                       label,
                       value,
@@ -397,7 +396,6 @@ function StatCard({
     );
 }
 
-// Circular voting chart
 function VotingCircle({
                           label,
                           rate,
@@ -494,7 +492,6 @@ function VotingCircle({
     );
 }
 
-// Dashboard statistics icons
 function DashboardIcon({ name }: { name: string }) {
     const common = {
         width: 21,
